@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.jt.sys.dao.SysRoleDao">
+  <!-- 注意企业中不用*号而是写相应的列表字段，
+              因为*号的性能差！！！ -->
+  <select id="findPageObjects" 
+  		  resultType="com.jt.sys.entity.SysRole">
+  	select * 
+  	from sys_roles 
+  	<include refid="queryWhereId"/>
+  	limit #{startIndex},#{pageSize}
+  </select>
+  
+  <!-- 此处resultType=int或Integer都可以 -->
+  <select id="getRowCount" resultType="Integer">
+  	select count(*)
+  	from sys_roles
+  	<include refid="queryWhereId"/>
+  </select>
+  
+  <sql id="queryWhereId">
+  	<where>
+  		<if test="name!=null and name!=''">
+			name like concat("%",#{name},"%")  			
+  		</if>
+  	</where>
+  </sql>
+  
+  <!-- 注意在SysConfigMapper中delete没有parameterType -->
+  <delete id="deleteObject" parameterType="int">
+  	delete from sys_roles
+  	where id=#{id}
+  </delete>
+  
+  <!-- 把自生成的主键直接给parameterType的id属性注入!!! -->
+  <insert id="insertObject" 
+  		  parameterType="com.jt.sys.entity.SysRole"
+  		  useGeneratedKeys="true"
+  		  keyProperty="id">
+  	insert into sys_roles
+  	(name,note,createdTime,modifiedTime,createdUser,modifiedUser)
+  	values
+  	(#{name},#{note},#{createdTime},#{modifiedTime},
+  	 #{createdUser},#{modifiedUser})
+  </insert>
+  
+  <select id="findObjectById" resultType="com.jt.sys.entity.SysRole">
+  	select *
+  	from sys_roles
+  	where id=#{id}
+  </select>
+  
+  <update id="updateObject" parameterType="com.jt.sys.entity.SysRole">
+  	      update sys_roles
+           <set>
+            <if test="name!=null and name!=''">
+             name=#{name},
+            </if>
+            <if test="note!=null and note!=''">
+             note=#{note},
+            </if>
+            <if test="modifiedUser!=null and modifiedUser!=''">
+             modifiedUser=#{modifiedUser},
+            </if>
+             modifiedTime=#{modifiedTime}
+           </set>
+           where id=#{id}
+  </update>
+  
+  </mapper>
